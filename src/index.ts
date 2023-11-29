@@ -1,15 +1,36 @@
 require("dotenv").config();
+const cors = require("cors");
+import authRoutes from "./routes/authRoutes";
+import blogRoutes from "./routes/blogRoutes";
 import express from "express";
+import cookieParser from "cookie-parser";
 import connectToDatabase from "./database";
 
 const app = express();
+
+// MIDDLEWARE
+app.use(cors());
 app.use(express.static("public"));
+app.use(express.json());
+app.use(cookieParser());
 
-app.get("/", (req, res) => {
-  res.send({
-    message: "success",
-  });
+// DB CONNECTION AND SERVER START
+async function initializeServer() {
+  try {
+    await connectToDatabase();
+    app.listen(5000, () => {
+      console.log("server listening on port 5000");
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+initializeServer();
+
+// ROUTES
+app.use(authRoutes);
+app.use(blogRoutes);
+
+app.all("*", (req, res) => {
+  res.status(404).json({ message: "404 not found" });
 });
-
-connectToDatabase();
-app.listen(3000);

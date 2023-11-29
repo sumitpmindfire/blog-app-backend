@@ -1,16 +1,21 @@
-import { MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
 const dbUri = process.env.MONGODB_URI as string;
-const dbClient = new MongoClient(dbUri);
 
 const connectToDatabase = async () => {
   try {
-    await dbClient.connect();
-    await dbClient.db("users");
+    mongoose.connect(dbUri, {
+      dbName: "blog-cms",
+    });
+    mongoose.connection.on("open", () => {
+      console.log("Connected to DB");
+    });
+    mongoose.connection.on("error", (error) => {
+      console.error(error);
+    });
   } catch (error) {
     console.error(error);
-  } finally {
-    await dbClient.close();
+    throw error;
   }
 };
 
