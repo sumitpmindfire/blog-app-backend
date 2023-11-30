@@ -1,12 +1,11 @@
 import { Router } from "express";
-import authenticateToken from "../middlewares/authenticateUser";
+import blogController from "../controllers/blogController";
 
 const router = Router();
 
-router.get("/blogs", authenticateToken, (req, res) => {
-  // TODO add api
-  console.log("user authenticated");
-  res.sendStatus(200);
-});
+router.get("/blogs", blogController.getBlogs);
+router.post("/blogs", blogController.createBlogPost);
+router.get("/blogs/:blogId", blogController.getBlogDetails);
+router.post("/blog/:blogId/delete", blogController.deleteBlogPost);
 
 export default router;

@@ -1,14 +1,17 @@
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import { Types } from "mongoose";
 import bcrypt from "bcrypt";
 import User from "../models/User";
+import { jwtExpiration } from "../configuration";
 
-const jwtExpiration = 60 * 30;
-const createToken = (userId: Types.ObjectId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-    expiresIn: jwtExpiration,
-  });
+const createToken = (userData: any) => {
+  return jwt.sign(
+    { id: userData._id, role: userData.role },
+    process.env.JWT_SECRET as string,
+    {
+      expiresIn: jwtExpiration,
+    }
+  );
 };
 
 const signupPost: RequestHandler = async (req, res) => {
@@ -42,8 +45,12 @@ const loginPost: RequestHandler = async (req, res) => {
       if (user) {
         const auth = await bcrypt.compare(password, user.password);
         if (auth) {
-          const token = createToken(user._id);
-          res.status(200).json({ accessToken: token });
+          const token = createToken(user);
+          res.status(200).json({
+            accessToken: token,
+            username: user.username,
+            role: user.role,
+          });
         } else {
           res.status(401).json({ message: "Username or password incorrect" });
         }

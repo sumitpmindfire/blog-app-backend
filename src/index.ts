@@ -2,9 +2,12 @@ require("dotenv").config();
 const cors = require("cors");
 import authRoutes from "./routes/authRoutes";
 import blogRoutes from "./routes/blogRoutes";
+import userRoutes from "./routes/userRoutes";
 import express from "express";
 import cookieParser from "cookie-parser";
 import connectToDatabase from "./database";
+import authenticateToken from "./middlewares/authenticateUser";
+import authorizeAdmin from "./middlewares/authorizeAdmin";
 
 const app = express();
 
@@ -29,7 +32,11 @@ initializeServer();
 
 // ROUTES
 app.use(authRoutes);
+app.use(authenticateToken); // Authentication middleware
 app.use(blogRoutes);
+// ADMIN ROUTES
+app.use(authorizeAdmin);
+app.use(userRoutes);
 
 app.all("*", (req, res) => {
   res.status(404).json({ message: "404 not found" });
