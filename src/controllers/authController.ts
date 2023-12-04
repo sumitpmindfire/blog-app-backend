@@ -6,7 +6,7 @@ import { jwtExpiration } from "../configuration";
 
 const createToken = (userData: any) => {
   return jwt.sign(
-    { id: userData._id, role: userData.role },
+    { id: userData._id, username: userData.username, role: userData.role },
     process.env.JWT_SECRET as string,
     {
       expiresIn: jwtExpiration,
@@ -42,7 +42,12 @@ const loginPost: RequestHandler = async (req, res) => {
     if (req.body) {
       const { username, password } = req.body;
       const user = await User.findOne({ username });
-      if (user) {
+      console.log("uswr", user);
+      if (user && !user.isActive) {
+        res.status(401).json({
+          message: "Account is not active, please contact Admin",
+        });
+      } else if (user) {
         const auth = await bcrypt.compare(password, user.password);
         if (auth) {
           const token = createToken(user);
@@ -54,6 +59,8 @@ const loginPost: RequestHandler = async (req, res) => {
         } else {
           res.status(401).json({ message: "Username or password incorrect" });
         }
+      } else {
+        res.status(401).json({ message: "Username or password incorrect" });
       }
     }
   } catch (error: any) {

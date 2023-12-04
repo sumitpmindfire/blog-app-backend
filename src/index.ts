@@ -3,6 +3,7 @@ const cors = require("cors");
 import authRoutes from "./routes/authRoutes";
 import blogRoutes from "./routes/blogRoutes";
 import userRoutes from "./routes/userRoutes";
+import commentRoutes from "./routes/commentRoutes";
 import express from "express";
 import cookieParser from "cookie-parser";
 import connectToDatabase from "./database";
@@ -34,6 +35,7 @@ initializeServer();
 app.use(authRoutes);
 app.use(authenticateToken); // Authentication middleware
 app.use(blogRoutes);
+app.use(commentRoutes);
 // ADMIN ROUTES
 app.use(authorizeAdmin);
 app.use(userRoutes);

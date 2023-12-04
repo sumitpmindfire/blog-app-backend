@@ -1,6 +1,11 @@
 import { RequestHandler } from "express";
 import Blog from "../models/Blog";
 
+/**
+ * Get all blogs
+ * @param req
+ * @param res
+ */
 const getBlogs: RequestHandler = async (req, res) => {
   try {
     const category = req.query?.category;
@@ -11,6 +16,11 @@ const getBlogs: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * Get blog details by blog id
+ * @param req
+ * @param res
+ */
 const getBlogDetails: RequestHandler = async (req, res) => {
   try {
     const blogId = req.params.blogId;
@@ -21,6 +31,11 @@ const getBlogDetails: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * Delete a blog
+ * @param req
+ * @param res
+ */
 const deleteBlogPost: RequestHandler = async (req, res) => {
   try {
     await Blog.findOneAndDelete({ _id: req.params.blogId });
@@ -30,16 +45,20 @@ const deleteBlogPost: RequestHandler = async (req, res) => {
   }
 };
 
+/**
+ * Create a new blog
+ * @param req
+ * @param res
+ */
 const createBlogPost: RequestHandler = async (req, res) => {
   try {
     if (req.body) {
       const { title, content, category, user } = req.body;
-      console.log("user", user);
       await Blog.create({
         title,
         content,
         category,
-        createdBy: { userId: user.id },
+        createdBy: { userId: user.id, username: user.username },
       });
       res.status(201).json({ message: "Blog created successfully" });
     }

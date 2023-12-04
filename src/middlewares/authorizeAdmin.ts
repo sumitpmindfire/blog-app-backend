@@ -8,7 +8,6 @@ const authorizeAdmin: RequestHandler = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET as string, (err, user: any) => {
     if (err || user?.role !== "ADMIN") return res.sendStatus(403);
-    console.log("verified");
     next();
   });
 };

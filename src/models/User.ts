@@ -6,23 +6,32 @@ enum UserTypes {
   CONTRIBUTOR = "CONTRIBUTOR",
 }
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, "Username is required"],
-    unique: true,
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [8, "Password must be atleast 8 characters long"],
+    },
+    role: {
+      type: String,
+      enum: UserTypes,
+      default: UserTypes.CONTRIBUTOR,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    minlength: [8, "Password must be atleast 8 characters long"],
-  },
-  role: {
-    type: String,
-    enum: UserTypes,
-    default: UserTypes.CONTRIBUTOR,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
