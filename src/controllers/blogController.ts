@@ -54,13 +54,13 @@ const createBlogPost: RequestHandler = async (req, res) => {
   try {
     if (req.body) {
       const { title, content, category, user } = req.body;
-      await Blog.create({
+      const newBlog = await Blog.create({
         title,
         content,
         category,
         createdBy: { userId: user.id, username: user.username },
       });
-      res.status(201).json({ message: "Blog created successfully" });
+      res.status(201).json({ message: "Blog created successfully", newBlog });
     }
   } catch (error: any) {
     const errors: { [key: string]: string } = {};
